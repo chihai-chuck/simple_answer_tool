@@ -50,6 +50,7 @@ const rule ={
       let content = yield sendReq(reqOptions,body.data.quiz)
       const $ = cheerio.load(content, { decodeEntities: false });
       const resList = $('.result');
+      let times = new Array(4);
       options.forEach((answer,i) => {
         let time = 0;
         resList.each((index, result)=>{
@@ -57,7 +58,11 @@ const rule ={
             time++
           }
         })
-        options[i] = `${answer}[${time}]`
+        times[i] = time;
+      });
+      const timesMaxIndex = times.indexOf(Math.max.apply(Math, times));
+      options.forEach((item,i) => {
+          options[i] = `${item}[${times[i]}]${timesMaxIndex===i?'★':''}`
       });
       body.data.options = options
       body=new Buffer(JSON.stringify(body))
